@@ -50,9 +50,9 @@ Once uploaded to GitHub:
 - Click on any `.java` file to view
 - Click **"Raw"** to get the direct download link
 - Replace in URL:  
-  `https://github.com/Tejaswini-23/Computer-Networks-Programs/blob/main/`  
+  `https://github.com/Tejaswini-23/Computer-Networks-Programs-/blob/main/`  
   ⬇  
-  `https://raw.githubusercontent.com/Tejaswini-23/Computer-Networks-Programs/main/`
+  `https://raw.githubusercontent.com/Tejaswini-23/Computer-Networks-Programs-/main/`
 
 ---
 
