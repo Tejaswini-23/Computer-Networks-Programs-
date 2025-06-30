@@ -1,0 +1,245 @@
+SQL Queries - 3 (day 17)
+
+Consider following 3 tables
+Sailors 
+----------
+sid 
+sname
+age
+rating
+
+Reserves
+----------
+sid
+bid
+date
+
+Boats
+----------
+bid 
+bname
+colour
+
+Write sql queries to retrieve data for following problems
+Note:If we can solve a query using join and sub query try both versions
+Q)Find names of sailors who have reserved boat 1 or 3
+-- Using JOIN
+SELECT DISTINCT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+WHERE r.bid IN (1, 3);
+
+-- Using Subquery
+SELECT sname 
+FROM Sailors 
+WHERE sid IN (SELECT sid FROM Reserves WHERE bid IN (1, 3));
+
+Q)Find name of sailors who have reserved a red boat
+-- Using JOIN
+SELECT DISTINCT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+JOIN Boats b ON r.bid = b.bid
+WHERE b.colour = 'red';
+
+-- Using Subquery
+SELECT sname 
+FROM Sailors 
+WHERE sid IN (
+    SELECT sid 
+    FROM Reserves 
+    WHERE bid IN (
+        SELECT bid FROM Boats WHERE colour = 'red'
+    )
+);
+
+Q1)Find the colours of the boats reserved by lubber 
+SELECT DISTINCT b.colour
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+JOIN Boats b ON r.bid = b.bid
+WHERE s.sname = 'lubber';
+
+Q2)Find names of sailors who have reserved atleast 1 boat 
+SELECT DISTINCT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid;
+
+-- Using Subquery
+SELECT sname 
+FROM Sailors 
+WHERE sid IN (SELECT sid FROM Reserves);
+
+Q3)Find name of sailors who have reserved no boats
+ SELECT DISTINCT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid;
+
+-- Using Subquery
+SELECT sname 
+FROM Sailors 
+WHERE sid IN (SELECT sid FROM Reserves);SELECT sname 
+FROM Sailors 
+WHERE sid NOT IN (SELECT sid FROM Reserves);
+
+Q4)Find names of sailors who have reserved either a red or green boat 
+SELECT DISTINCT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+JOIN Boats b ON r.bid = b.bid
+WHERE b.colour IN ('red', 'green');
+
+Q5)Find names of sailors who have reserved both red and green boat 
+SELECT sname 
+FROM Sailors s
+WHERE sid IN (
+    SELECT r1.sid
+    FROM Reserves r1
+    JOIN Boats b1 ON r1.bid = b1.bid
+    WHERE b1.colour = 'red'
+)
+AND sid IN (
+    SELECT r2.sid
+    FROM Reserves r2
+    JOIN Boats b2 ON r2.bid = b2.bid
+    WHERE b2.colour = 'green'
+);
+
+
+Q6)Find names of sailors who have reserved atleast 2 boats **
+SELECT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+GROUP BY s.sid, s.sname
+HAVING COUNT(DISTINCT r.bid) >= 2;
+
+Q7)Find sid's of sailors with age over 20 and who have not reserved red boat
+SELECT sid 
+FROM Sailors 
+WHERE age > 20 
+AND sid NOT IN (
+    SELECT r.sid 
+    FROM Reserves r
+    JOIN Boats b ON r.bid = b.bid
+    WHERE b.colour = 'red'
+);
+
+
+Q8)Find sailor name boat id and reservation day for each reservation
+SELECT s.sname, r.bid, r.date
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid;
+
+Q)Find sid's of sailors who have reserved a red boat **
+SELECT DISTINCT r.sid
+FROM Reserves r
+JOIN Boats b ON r.bid = b.bid
+WHERE b.colour = 'red';
+
+Q)Find names of sailors who have reseved a red boat **
+SELECT DISTINCT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+JOIN Boats b ON r.bid = b.bid
+WHERE b.colour = 'red';
+
+Q)Find ratings of the person who have sailed 2 diff boats on same day 
+SELECT DISTINCT s.rating
+FROM Sailors s
+JOIN Reserves r1 ON s.sid = r1.sid
+JOIN Reserves r2 ON s.sid = r2.sid
+WHERE r1.date = r2.date AND r1.bid <> r2.bid;
+
+Q)Find ages of the sailors whose name begins with b and ends with b and should contain atleast 3 characters
+SELECT age 
+FROM Sailors 
+WHERE sname LIKE 'b%b' AND LENGTH(sname) >= 3;
+
+Q)Find names of sailors who have reserved red boats but not green boats
+SELECT DISTINCT s.sname
+FROM Sailors s
+WHERE sid IN (
+    SELECT r.sid 
+    FROM Reserves r 
+    JOIN Boats b ON r.bid = b.bid 
+    WHERE b.colour = 'red'
+)
+AND sid NOT IN (
+    SELECT r.sid 
+    FROM Reserves r 
+    JOIN Boats b ON r.bid = b.bid 
+    WHERE b.colour = 'green'
+);
+ 
+Q)Find names of sailors who rating is better than some sailor called "horashio"
+SELECT sname 
+FROM Sailors 
+WHERE rating > ANY (
+    SELECT rating 
+    FROM Sailors 
+    WHERE sname = 'horashio'
+);
+
+Q)Find name age rating of the sailors with highest rating
+SELECT sname, age, rating 
+FROM Sailors 
+WHERE rating = (SELECT MAX(rating) FROM Sailors);
+
+Q)Find name and age of first sailor according to alphabetical order of name with highest rating
+SELECT sname, age 
+FROM Sailors 
+WHERE rating = (SELECT MAX(rating) FROM Sailors)
+ORDER BY sname
+LIMIT 1;
+
+Q)Find age and name of oldest sailor 
+SELECT age, sname 
+FROM Sailors 
+WHERE age = (SELECT MAX(age) FROM Sailors);
+
+Q)Find names of sailors who are older than oldest sailor with rating 10 
+SELECT sname 
+FROM Sailors 
+WHERE age > (
+    SELECT MAX(age) 
+    FROM Sailors 
+    WHERE rating = 10
+);
+
+Q)Find age of youngest sailor for each rating
+SELECT rating, MIN(age) AS youngest_age
+FROM Sailors 
+GROUP BY rating;
+ 
+Q)Find no. reservations for each red boat
+SELECT b.bid, COUNT(*) AS reservations
+FROM Boats b
+JOIN Reserves r ON b.bid = r.bid
+WHERE b.colour = 'red'
+GROUP BY b.bid;
+ 
+Q)Find avg age of sailors for each rating level that has atleast 2 sailors
+SELECT rating, AVG(age) AS avg_age
+FROM Sailors 
+GROUP BY rating
+HAVING COUNT(*) >= 2;
+
+
+
+Consider above table emp 
+id- prim key
+Q) write sql query to swap all f to m and vive versa with a single update statement no intermediate temporary tables 
+NOTE : do not write any select statement for this solution
+
+
+
+Questions
+---------
+1)what is the difference between unique key and primary key
+2)Can we create 2 primary keys on same table if no why? or if yes why?
+3)what is the difference between OLTP OLAP
+4)what is system log in Database
+5)where and when we need system log in database
+6)what do you mean by system log in Operating System or why is it required
+7)diff btw trunk delete
+8)what is sequence in database 
